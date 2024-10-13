@@ -7,7 +7,7 @@ const userSchema=mongoose.Schema({
 
     email:{
         type:String,
-        required:[true,'Please email your name'],
+        required:[true,'Please add your email'],
         unique:true
     },
 
