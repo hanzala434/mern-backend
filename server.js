@@ -1,19 +1,25 @@
+const path =require('path')
 const express = require('express');
 const colors=require('colors')
+const cors = require('cors');
 const dotenv=require('dotenv').config()
-const port=process.env.PORT||5000
+const port=8000
 const connectDB=require('./config/db')
 const {errorHandler}=require('./middleware/errorMiddleware')
 
 
 connectDB();
 const app=express();
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 app.use('/api/vendors',require('./Routes/VendorsRoutes'));
 app.use('/api/users',require('./Routes/UserRoutes'));
+app.use('/api/setup-budget',require('./Routes/BudgetRoutes'));
+
+
+
 
 
 app.use(errorHandler);

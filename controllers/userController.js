@@ -1,16 +1,16 @@
 const jwt=require('jsonwebtoken')
 const bcrypt=require('bcryptjs')
-const asynHandler=require('express-async-handler')
-const User =require('../models/Vendor')
+const asyncHandler=require('express-async-handler')
+const User =require('../models/User')
 
 
 //@disc register user
 //route POST/api/users
 //@access Public
-const registerUser= asynHandler(async (req,res)=>{
+const registerUser= asyncHandler(async (req,res)=>{
     const {name,email,password}=req.body
 
-    if(!name||!email||!password){
+    if(!name || !email || !password){
         res.status(400)
         throw new Error('Please add all fields')
     }
@@ -39,6 +39,7 @@ const registerUser= asynHandler(async (req,res)=>{
         {_id:user.id,
         name:user.name,
         email:user.email,
+        token:generateToken(user.id)
     })
     }else{
         res.status(400)
@@ -52,18 +53,40 @@ const registerUser= asynHandler(async (req,res)=>{
 //@disc Authenticate user
 //route POST/api/users/login
 //@access Public
-const loginUser=asynHandler(async (req,res)=>{
-    res.json({message:'login User'})
+const loginUser=asyncHandler(async (req,res)=>{
+
+    const {email,password}=req.body
+    const user=await User.findOne({email})
+
+    if(user &&(await bcrypt.compare(password,user.password))){
+        res.status(201).json(
+            {_id:user.id,
+            name:user.name,
+            email:user.email,
+            token:generateToken(user.id)
+        })
+    }else{
+        res.status(400)
+        throw new Error('Invalid credentials')
+    }
+
+
 })
 
 //@disc Get user data
 //route Get/api/users/me
-//@access Public
-const getMe=asynHandler(async (req,res)=>{
-    res.json({message:' User Data display'})
+//@access Private
+const getMe=asyncHandler(async (req,res)=>{
+res.status(200).json(req.user)
 })
 
 
+//Generate JWT Token
+const generateToken=(id)=>{
+    return jwt.sign({id},process.env.JWT_SECRET,
+        {expiresIn:'30d'})
+    
+}   
 
 
 
