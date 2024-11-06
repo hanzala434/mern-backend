@@ -17,6 +17,12 @@ app.use(express.urlencoded({extended:false}));
 app.use('/api/vendors',require('./Routes/VendorsRoutes'));
 app.use('/api/users',require('./Routes/UserRoutes'));
 app.use('/api/setup-budget',require('./Routes/BudgetRoutes'));
+app.use('/api/services',require('./Routes/ServicesRoutes'));
+app.use('/api/booking',require('./Routes/BookingRoutes'));
+app.use('/api/packages',require('./Routes/PackagesRoutes'));
+
+
+
 
 
 

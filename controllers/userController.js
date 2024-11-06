@@ -8,9 +8,9 @@ const User =require('../models/User')
 //route POST/api/users
 //@access Public
 const registerUser= asyncHandler(async (req,res)=>{
-    const {name,email,password}=req.body
+    const {name,email,password,role}=req.body
 
-    if(!name || !email || !password){
+    if(!name || !email || !password ||!role){
         res.status(400)
         throw new Error('Please add all fields')
     }
@@ -31,7 +31,8 @@ const registerUser= asyncHandler(async (req,res)=>{
     const user=await User.create({
         name,
         email,
-        password:hashedPassword
+        password:hashedPassword,
+        role
     })
 
     if(user){
@@ -55,7 +56,7 @@ const registerUser= asyncHandler(async (req,res)=>{
 //@access Public
 const loginUser=asyncHandler(async (req,res)=>{
 
-    const {email,password}=req.body
+    const {email,password,role}=req.body
     const user=await User.findOne({email})
 
     if(user &&(await bcrypt.compare(password,user.password))){
@@ -63,7 +64,8 @@ const loginUser=asyncHandler(async (req,res)=>{
             {_id:user.id,
             name:user.name,
             email:user.email,
-            token:generateToken(user.id)
+            role:user.role,
+            token:generateToken(user.id,role)
         })
     }else{
         res.status(400)
@@ -82,8 +84,8 @@ res.status(200).json(req.user)
 
 
 //Generate JWT Token
-const generateToken=(id)=>{
-    return jwt.sign({id},process.env.JWT_SECRET,
+const generateToken=(id,role)=>{
+    return jwt.sign({id,role},process.env.JWT_SECRET,
         {expiresIn:'30d'})
     
 }   

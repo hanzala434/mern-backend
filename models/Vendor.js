@@ -8,9 +8,23 @@ const vendorSchema=mongoose.Schema({
     name:{
     type:String,
     required:[true,'Please add name']
-}
-
-},
+    },
+    category:{
+        type:String,
+        required:[true,'Please add category']
+    },
+    profile:{
+        type:String,
+    },
+    email:{
+        type:String,
+        required:[true,'Please add email']
+    },
+    phone:{
+        type:String,
+        required:[true,'Please add Phone Number']
+    }
+    },
     {timestamps:true,}
 )
 

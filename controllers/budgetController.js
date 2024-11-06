@@ -22,6 +22,13 @@ const createBudget=asyncHandler(async(req,res)=>{
         res.status(400)
         throw new Error('Please add all text fields');
     }
+    const total = 
+    Number(req.body.decor) + 
+    Number(req.body.photography) + 
+    Number(req.body.venue) + 
+    Number(req.body.others);
+
+
 
     const budget=await Budget.create({
         decor:req.body.decor,
@@ -29,9 +36,10 @@ const createBudget=asyncHandler(async(req,res)=>{
         venue:req.body.venue,
         others:req.body.others,
         user:req.user.id,
+        total:total,
     })
 
-
+    console.log(total);
     res.status(200).json(budget)
 
 })
@@ -74,27 +82,23 @@ const updateBudget=asyncHandler(async(req,res)=>{
 //route DELETE/api/setup-budget/
 //@access private
 const deleteBudget=asyncHandler(async (req,res)=>{
-    const budget=await Budget.findById(req.params.id);
-    if(!budget){
-        res.status(400)
-        throw new Error('Vendor with id not found')
-    }
-   
-    if(!req.user)
-    {
-        res.status(401)
-        throw new Error('User not found')
+    if (!req.user) {
+        res.status(401);
+        throw new Error('User not found');
     }
 
-    //Make sure the logged-in user matches the budget user
-    if(budget.user.toString()!==req.user.id)
-    {
-        res.status(401)
-        throw new Error('User not Autherized')
-    }
-    await Budget.findByIdAndDelete(req.params.id); // Delete the budget
-    res.status(200).json({id:req.params.id})
+    // Find all budgets for the logged-in user
+    const budgets = await Budget.find({ user: req.user.id });
 
+    if (budgets.length === 0) {
+        res.status(400);
+        throw new Error('No budgets found for this user');
+    }
+
+    // Delete all budgets associated with the user
+    await Budget.deleteMany({ user: req.user.id });
+
+    res.status(200).json({ message: 'All budgets deleted successfully' });
 })
 
 module.exports={

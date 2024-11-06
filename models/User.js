@@ -15,7 +15,15 @@ const userSchema=mongoose.Schema({
         type:String,
         required:[true,'Please add your password']
     },
+    role:{
+        type:String,
+        required:true,
+        enum:["admin","user"]
+
+    },
+
 },
+
 {
     timestamps:true
 })
